@@ -1,0 +1,5 @@
+argparse
+rich
+requests
+asyncio
+aiohttp
