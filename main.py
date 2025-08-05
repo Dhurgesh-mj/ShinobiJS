@@ -6,9 +6,9 @@ import aiohttp
 from rich.console import Console
 from rich.panel import Panel
 from rich import print
-from utils.crawler import crawl
-from utils.extractor import extract_js_links
-from utils.parser import parse_js_for_insights_async
+from core.crawler import crawl
+from core.extractor import extract_js_links
+from core.parser import parse_js_for_insights_async
 
 console = Console()
 
