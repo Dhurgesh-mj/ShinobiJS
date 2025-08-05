@@ -1,24 +1,29 @@
-import re 
+import re
 import aiohttp
 
-async def fetch_js(session,url):
-     try:
-          async with session.get(url,timeount=10) as resp:
-               return await resp.text()
-     except:
-          return ""
+async def parse_js_for_insights_async(session, url):
+    findings = {
+        "url": url,
+        "imports": set(),
+        "fetches": set(),
+        "secrets": set(),
+        "sourcemaps": set()
+    }
 
-async def parse_js(session,js_url):
-        js = await fetch_js(session,js_url)
-        imports = re.findall(r'import\((["\'])(.*?)\1\)', js)
-        fetches = re.findall(r'(fetch|axios\\.get|axios\\.post)\\((["\'])(.*?)\\2', js)
-        secrets = re.findall(r'(apikey|token|secret)[\\s]*[:=][\\s]*[\"\\\']?([A-Za-z0-9-_]{10,})', js)
-        sourcemaps = re.findall(r'sourceMappingURL=([\\w./\\-]+\\.map)', js)
+    try:
+        async with session.get(url, timeout=10) as r:
+            content = await r.text()
+    except Exception as e:
+        print(f"[!] Error fetching JS from {url}: {e}")
+        return findings
 
-        return {
-        "url": js_url,
-        "imports": [i[1] for i in imports],
-        "fetches": [f[2] for f in fetches],
-        "secrets": [f"{k}={v}" for k, v in secrets],
-        "sourcemaps": sourcemaps
-        }
+    findings["imports"] = set(re.findall(r"import\(['\"](.*?)['\"]\)", content))
+    findings["fetches"] = set(re.findall(r"(fetch|axios|get|post|put|delete)\(['\"](.*?)['\"]", content))
+    findings["secrets"] = set(re.findall(r"(apikey|api_key|secret|token)[\"']?\s*[:=]\s*[\"']([^\"']+)[\"']", content, re.I))
+    findings["sourcemaps"] = set(re.findall(r"sourceMappingURL=(.*?\.map)", content))
+
+    # Clean fetch endpoints
+    findings["fetches"] = {url for method, url in findings["fetches"]}
+    findings["secrets"] = {f"{k}={v}" for k, v in findings["secrets"]}
+
+    return findings

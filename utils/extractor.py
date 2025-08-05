@@ -1,29 +1,29 @@
-import aiohttp
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+import re
+import requests
 
+def extract_js_links(url):
+    external_js = set()
+    inline_scripts = []
 
-async def fetch_html(session,url):
-     try:
-          async with session.get(url,timeount=10) as resp:
-               return await resp.text()
-     except:
-          return ""
+    try:
+        r = requests.get(url, timeout=10)
+        html = r.text
+        soup = BeautifulSoup(html, 'html.parser')
 
-async def extract_js_links(session,url):
-    external = set()
-    inline = []
-
-    html = await fetch_html(session,url)
-    if not html:
-         return external,inline
-    soup = BeautifulSoup(html,'html.parser')
-    for script in soup.find_all("script"):
-        if script.get('scr'):
-            js_url = urljoin(url,script['src'])
-            if js_url.endswith(".js"):
-                external.add(js_url)
+        for script in soup.find_all("script"):
+            src = script.get("src")
+            if src and ".js" in src:
+                full_src = urljoin(url, src)
+                external_js.add(full_src)
             elif script.string:
-                 inline.append(script.string)
-    
-    return external,inline 
+                inline_scripts.append(script.string)
+        pattern = r"""(?:"|')((?:https?:)?//[^"']+\.js(?:\?[^"']*)?)(?:"|')"""
+        found = re.findall(pattern, html)
+        external_js.update(found)
+
+    except Exception as e:
+        print(f"[!] Failed to extract from {url}: {e}")
+
+    return external_js, inline_scripts
