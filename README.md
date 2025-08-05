@@ -127,9 +127,3 @@ ShinobiJS/
 
 Created by **[@yourname](https://github.com/yourname)**  
 Feel free to star ⭐, fork 🍴, and contribute 🔧!
-
----
-
-## 🔥 Credits
-
-Inspired by tools like [LinkFinder](https://github.com/GerbenJavado/LinkFinder), [getJS](https://github.com/003random/getJS), and [katana](https://github.com/projectdiscovery/katana).
