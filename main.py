@@ -1,5 +1,3 @@
-# File: shinobijs/main.py
-
 import argparse
 import asyncio
 import aiohttp
