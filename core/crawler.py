@@ -17,7 +17,7 @@ async def crawl_async(base_url, max_depth=2):
     found = set()
     domain = urlparse(base_url).netloc
 
-    connector = aiohttp.TCPConnector(limit=30)
+    connector = aiohttp.TCPConnector(limit=0)
     headers = {"User-Agent": "Mozilla/5.0 (ShinobiJS Recon Tool)"}
     async with aiohttp.ClientSession(connector=connector, headers=headers) as session:
         while queue:
