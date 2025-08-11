@@ -125,5 +125,5 @@ ShinobiJS/
 
 ## 💬 Author
 
-Created by **[@yourname](https://github.com/yourname)**  
+Created by **MJ DHURGESH (https://github.com/Dhurgesh-mj)**  
 Feel free to star ⭐, fork 🍴, and contribute 🔧!
